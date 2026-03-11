@@ -42,6 +42,11 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.21.x'
+          cache: true
+      - name: Set up Go env
+        run: |
+          echo "GOPROXY=https://proxy.golang.org,direct" >> $GITHUB_ENV
+          echo "CGO_ENABLED=0" >> $GITHUB_ENV
       - name: Build agent
         shell: bash
         run: |
@@ -49,7 +54,7 @@ jobs:
           export GOOS=${{ matrix.goos }}
           export GOARCH=${{ matrix.goarch }}
           OUT="consent-agent-${GOOS}-${GOARCH}${{ matrix.ext }}"
-          go build -o "$OUT"
+          go build -trimpath -ldflags="-s -w" -o "$OUT"
           mv "$OUT" "$GITHUB_WORKSPACE/"
       - name: Upload release assets
         uses: softprops/action-gh-release@v2

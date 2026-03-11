@@ -14,11 +14,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"sync"
 	"time"
-	"unicode/utf16"
-	"unsafe"
 )
 
 type Rule struct {
@@ -351,24 +348,10 @@ func buildMessage(req ConsentRequest) string {
 	return fmt.Sprintf("动作: %s\n目标: %s\n来源: %s\n摘要: %s\n是否允许？", req.Action, target, source, summary)
 }
 
-const (
-	MB_OKCANCEL = 0x00000001
-	MB_ICONWARN = 0x00000030
-	IDOK        = 1
-	IDCANCEL    = 2
-)
-
 func promptUserCrossPlatform(message string, modal bool) bool {
 	switch detectPlatform() {
 	case "windows":
-		user32 := syscall.NewLazyDLL("user32.dll")
-		proc := user32.NewProc("MessageBoxW")
-		title := "OpenClaw 保护确认"
-		ret, _, _ := proc.Call(0,
-			uintptr(unsafe.Pointer(syscallStringToUTF16Ptr(message))),
-			uintptr(unsafe.Pointer(syscallStringToUTF16Ptr(title))),
-			uintptr(MB_OKCANCEL|MB_ICONWARN))
-		return ret == IDOK
+		return messageBoxConfirmWindows(message)
 	case "darwin":
 		// osascript dialog; return 0 when OK
 		cmd := exec.Command("osascript", "-e", fmt.Sprintf(`display dialog %q with title %q buttons {"Cancel","OK"} default button "OK"`, message, "OpenClaw 保护确认"))
@@ -388,11 +371,6 @@ func promptUserCrossPlatform(message string, modal bool) bool {
 		// Fallback: no GUI prompt available, deny by default for safety
 		return false
 	}
-}
-
-func syscallStringToUTF16Ptr(s string) *uint16 {
-	u := utf16.Encode([]rune(s + "\x00"))
-	return &u[0]
 }
 
 func detectPlatform() string {
