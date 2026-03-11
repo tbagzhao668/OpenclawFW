@@ -1,6 +1,7 @@
 param(
   [string]$Repo = "https://github.com/tbagzhao668/OpenclawFW.git",
-  [string]$Tag = "latest"
+  [string]$Tag = "latest",
+  [switch]$ForceSource
 )
 $ErrorActionPreference='Stop'
 $dst = Join-Path $env:ProgramFiles 'OpenClawProtector'
@@ -11,17 +12,27 @@ $base = ($Repo -replace '\.git$','')
 $asset = "consent-agent-$os-$arch.exe"
 $url = "$base/releases/$Tag/download/$asset"
 if(-not (Test-Path $dst)){ New-Item -ItemType Directory -Path $dst | Out-Null }
-try {
-  Write-Host "Attempting to download $url"
-  iwr -UseBasicParsing -Uri $url -OutFile (Join-Path $dst 'consent-agent.exe')
-} catch {
-  Write-Host "Release asset unavailable; falling back to local build from source"
+if ($ForceSource) {
+  Write-Host "ForceSource enabled; building from source"
   git clone --depth=1 $Repo $tmp
   $agent = Join-Path $tmp 'protector\cmd\agent'
   Push-Location $agent
-  go build -o consent-agent.exe
+  go build -trimpath -ldflags="-s -w" -o consent-agent.exe
   Pop-Location
   Copy-Item (Join-Path $agent 'consent-agent.exe') (Join-Path $dst 'consent-agent.exe') -Force
+} else {
+  try {
+    Write-Host "Attempting to download $url"
+    iwr -UseBasicParsing -Uri $url -OutFile (Join-Path $dst 'consent-agent.exe')
+  } catch {
+    Write-Host "Release asset unavailable; falling back to local build from source"
+    git clone --depth=1 $Repo $tmp
+    $agent = Join-Path $tmp 'protector\cmd\agent'
+    Push-Location $agent
+    go build -trimpath -ldflags="-s -w" -o consent-agent.exe
+    Pop-Location
+    Copy-Item (Join-Path $agent 'consent-agent.exe') (Join-Path $dst 'consent-agent.exe') -Force
+  }
 }
 $startup = [Environment]::GetFolderPath('Startup')
 $lnk = Join-Path $startup 'OpenClaw Protector.lnk'
