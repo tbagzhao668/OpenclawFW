@@ -728,35 +728,35 @@ const indexHTML = `<!doctype html>
   }
   function render() {
     const root = document.getElementById('rules'); root.innerHTML = '';
-      div.innerHTML = `
-        <div class="row">
-          <label>ID <input value="${r.id||''}" onchange="update(${idx}, 'id', this.value)"/></label>
-          <label>动作 <select onchange="updateMatch(${idx}, 'action', this.value)">
-            <option value="">未选</option>
-            <option ${sel(r.match?.action,'run_script')}>脚本执行</option>
-            <option ${sel(r.match?.action,'delete')}>批量删除</option>
-            <option ${sel(r.match?.action,'network_change')}>网络变更</option>
-            <option ${sel(r.match?.action,'screenshot')}>截屏</option>
-            <option ${sel(r.match?.action,'clipboard_read')}>剪贴板读取</option>
-          </select></label>
-          <label>决策 <select onchange="update(${idx}, 'decision', this.value)">
-            <option ${sel(r.decision,'allow')}>允许</option>
-            <option ${sel(r.decision,'alert')}>提示</option>
-            <option ${sel(r.decision,'wait')}>等待</option>
-            <option ${sel(r.decision,'block')}>阻断</option>
-          </select></label>
-        </div>
-        <div class="row">
-          <label>来源 <input value="${r.match?.source||''}" placeholder="local/remote" onchange="updateMatch(${idx}, 'source', this.value)"/></label>
-          <label>路径包含 <input value="${r.match?.path_pattern||''}" placeholder="子串匹配" onchange="updateMatch(${idx}, 'path_pattern', this.value)"/></label>
-        </div>
-        <div class="row small">规则简化演示：match 字段采用等值或子串匹配。</div>
-        <div class="row"><button onclick="removeRule(${idx})">删除规则</button></div>
-      `;
+      var html = '';
+      html += '<div class=\"row\">';
+      html += '  <label>ID <input value=\"' + (r.id||'') + '\" onchange=\"update(' + idx + ', \\'id\\', this.value)\"/></label>';
+      html += '  <label>动作 <select onchange=\"updateMatch(' + idx + ', \\'action\\', this.value)\">';
+      html += '    <option value=\"\">未选</option>';
+      html += '    <option ' + sel(r.match?.action,'run_script') + '>脚本执行</option>';
+      html += '    <option ' + sel(r.match?.action,'delete') + '>批量删除</option>';
+      html += '    <option ' + sel(r.match?.action,'network_change') + '>网络变更</option>';
+      html += '    <option ' + sel(r.match?.action,'screenshot') + '>截屏</option>';
+      html += '    <option ' + sel(r.match?.action,'clipboard_read') + '>剪贴板读取</option>';
+      html += '  </select></label>';
+      html += '  <label>决策 <select onchange=\"update(' + idx + ', \\'decision\\', this.value)\">';
+      html += '    <option ' + sel(r.decision,'allow') + '>允许</option>';
+      html += '    <option ' + sel(r.decision,'alert') + '>提示</option>';
+      html += '    <option ' + sel(r.decision,'wait') + '>等待</option>';
+      html += '    <option ' + sel(r.decision,'block') + '>阻断</option>';
+      html += '  </select></label>';
+      html += '</div>';
+      html += '<div class=\"row\">';
+      html += '  <label>来源 <input value=\"' + (r.match?.source||'') + '\" placeholder=\"local/remote\" onchange=\"updateMatch(' + idx + ', \\'source\\', this.value)\"/></label>';
+      html += '  <label>路径包含 <input value=\"' + (r.match?.path_pattern||'') + '\" placeholder=\"子串匹配\" onchange=\"updateMatch(' + idx + ', \\'path_pattern\\', this.value)\"/></label>';
+      html += '</div>';
+      html += '<div class=\"row small\">规则简化演示：match 字段采用等值或子串匹配。</div>';
+      html += '<div class=\"row\"><button onclick=\"removeRule(' + idx + ')\">删除规则</button></div>';
+      div.innerHTML = html;
       root.appendChild(div);
     });
     const add = document.createElement('div'); add.className='actions';
-    add.innerHTML = `<button onclick="addRule()">添加规则</button>`;
+    add.innerHTML = '<button onclick=\"addRule()\">添加规则</button>';
     root.appendChild(add);
   }
   function sel(a,b){return a===b?'selected':''}
