@@ -664,6 +664,7 @@ const indexHTML = `<!doctype html>
   </div>
   </div>
   <div id="rules"></div>
+  <script>
   function renderNotify(){
     const on = (id) => document.getElementById(id).checked;
     document.getElementById('rowWebhook').style.display = on('chkWebhook') ? '' : 'none';
@@ -719,6 +720,7 @@ const indexHTML = `<!doctype html>
     document.getElementById('notifyStatus').textContent = msg;
     if(res.ok) setTimeout(()=>document.getElementById('notifyStatus').textContent='',1500);
   }
+  </script>
   <script>
   let rules = [];
   async function fetchRules() {
@@ -728,6 +730,8 @@ const indexHTML = `<!doctype html>
   }
   function render() {
     const root = document.getElementById('rules'); root.innerHTML = '';
+    rules.forEach((r, idx) => {
+      const div = document.createElement('div'); div.className = 'rule';
       var html = '';
       html += '<div class=\"row\">';
       html += '  <label>ID <input value=\"' + (r.id||'') + '\" onchange=\"update(' + idx + ', \\'id\\', this.value)\"/></label>';
