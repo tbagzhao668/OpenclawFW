@@ -1,0 +1,18 @@
+# Go build artifacts
+**/consent-agent
+**/consent-agent.exe
+**/openclaw
+**/openclaw.exe
+
+# Node / Editor
+node_modules/
+.DS_Store
+.vscode/
+
+# OS junk
+Thumbs.db
+
+# Build temp
+.artifacts/
+*.log
+
