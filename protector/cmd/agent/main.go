@@ -725,7 +725,13 @@ const indexHTML = `<!doctype html>
   let rules = [];
   async function fetchRules() {
     await loadNotify();
-    const res = await fetch('/api/rules'); rules = (await res.json()).rules || [];
+    try {
+      const res = await fetch('/api/rules');
+      const data = await res.json();
+      rules = (data.rules || []);
+    } catch (e) {
+      rules = rules || [];
+    }
     render();
   }
   function render() {
