@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  build-release:
+  build:
     name: build ${{ matrix.goos }}-${{ matrix.goarch }}
     runs-on: ${{ matrix.runner }}
     strategy:
@@ -56,11 +56,34 @@ jobs:
           OUT="consent-agent-${GOOS}-${GOARCH}${{ matrix.ext }}"
           go build -trimpath -ldflags="-s -w" -o "$OUT"
           mv "$OUT" "$GITHUB_WORKSPACE/"
-      - name: Upload release assets
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: consent-agent-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: consent-agent-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.ext }}
+          if-no-files-found: error
+
+  publish:
+    name: publish release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: List files
+        run: ls -al dist
+      - name: Create/Update release and upload assets
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
           files: |
-            consent-agent-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.ext }}
+            dist/**
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
