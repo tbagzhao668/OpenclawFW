@@ -1,9 +1,9 @@
-$ErrorActionPreference='Stop'
 param(
   [string]$Repo = "https://github.com/tbagzhao668/OpenclawFW.git",
   [string]$Tag = "latest"
 )
- $dst = Join-Path $env:ProgramFiles 'OpenClawProtector'
+$ErrorActionPreference='Stop'
+$dst = Join-Path $env:ProgramFiles 'OpenClawProtector'
 $tmp = Join-Path $env:TEMP ("ocp_"+[guid]::NewGuid().ToString())
 $os = "windows"
 $arch = if ($env:PROCESSOR_ARCHITECTURE -match "ARM64") { "arm64" } else { "amd64" }
