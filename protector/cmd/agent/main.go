@@ -738,16 +738,19 @@ const indexHTML = `<!doctype html>
     const root = document.getElementById('rules'); root.innerHTML = '';
     rules.forEach((r, idx) => {
       const div = document.createElement('div'); div.className = 'rule';
+      var ma = (r.match && r.match.action) || '';
+      var ms = (r.match && r.match.source) || '';
+      var mp = (r.match && r.match.path_pattern) || '';
       var html = '';
       html += '<div class=\"row\">';
       html += '  <label>ID <input value=\"' + (r.id||'') + '\" onchange=\"update(' + idx + ', \\'id\\', this.value)\"/></label>';
       html += '  <label>动作 <select onchange=\"updateMatch(' + idx + ', \\'action\\', this.value)\">';
       html += '    <option value=\"\">未选</option>';
-      html += '    <option ' + sel(r.match?.action,'run_script') + '>脚本执行</option>';
-      html += '    <option ' + sel(r.match?.action,'delete') + '>批量删除</option>';
-      html += '    <option ' + sel(r.match?.action,'network_change') + '>网络变更</option>';
-      html += '    <option ' + sel(r.match?.action,'screenshot') + '>截屏</option>';
-      html += '    <option ' + sel(r.match?.action,'clipboard_read') + '>剪贴板读取</option>';
+      html += '    <option ' + sel(ma,'run_script') + '>脚本执行</option>';
+      html += '    <option ' + sel(ma,'delete') + '>批量删除</option>';
+      html += '    <option ' + sel(ma,'network_change') + '>网络变更</option>';
+      html += '    <option ' + sel(ma,'screenshot') + '>截屏</option>';
+      html += '    <option ' + sel(ma,'clipboard_read') + '>剪贴板读取</option>';
       html += '  </select></label>';
       html += '  <label>决策 <select onchange=\"update(' + idx + ', \\'decision\\', this.value)\">';
       html += '    <option ' + sel(r.decision,'allow') + '>允许</option>';
@@ -757,8 +760,8 @@ const indexHTML = `<!doctype html>
       html += '  </select></label>';
       html += '</div>';
       html += '<div class=\"row\">';
-      html += '  <label>来源 <input value=\"' + (r.match?.source||'') + '\" placeholder=\"local/remote\" onchange=\"updateMatch(' + idx + ', \\'source\\', this.value)\"/></label>';
-      html += '  <label>路径包含 <input value=\"' + (r.match?.path_pattern||'') + '\" placeholder=\"子串匹配\" onchange=\"updateMatch(' + idx + ', \\'path_pattern\\', this.value)\"/></label>';
+      html += '  <label>来源 <input value=\"' + (ms||'') + '\" placeholder=\"local/remote\" onchange=\"updateMatch(' + idx + ', \\'source\\', this.value)\"/></label>';
+      html += '  <label>路径包含 <input value=\"' + (mp||'') + '\" placeholder=\"子串匹配\" onchange=\"updateMatch(' + idx + ', \\'path_pattern\\', this.value)\"/></label>';
       html += '</div>';
       html += '<div class=\"row small\">规则简化演示：match 字段采用等值或子串匹配。</div>';
       html += '<div class=\"row\"><button onclick=\"removeRule(' + idx + ')\">删除规则</button></div>';
